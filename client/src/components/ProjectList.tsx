@@ -1,11 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { getProjects } from '../api/projects'
+import type { Project } from '../context/ProjectContext'
 
-type Project = {
-  id: number
-  name: string
-  url: string
-}
+
 export default function ProjectList() {
   const {data, isLoading, isError} = useQuery({
   queryKey: ['projects'],

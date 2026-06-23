@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Header from './Header'
 import Footer from './Footer'
 import Sidebar from './Sidebar'
+import {ProjectProvider} from '../../context/ProjectProvider'
 
 
 type LayoutProps = {
@@ -9,15 +10,17 @@ type LayoutProps = {
 }
 
 const Layout = ({children}: LayoutProps) => {
-   return (<div>
-        < Header />
+   return (
+   <ProjectProvider>
         <div>
-            <Sidebar />
-            {children}
+            < Header />
+            <div>
+                <Sidebar />
+                {children}
+            </div>
+            < Footer />
         </div>
-        < Footer />
-    </div>
-
+    </ProjectProvider>
     )}
 
 
