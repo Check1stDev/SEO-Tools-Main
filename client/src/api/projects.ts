@@ -5,4 +5,5 @@ const getProjects = async () => {
     return result.data 
 }
 
+
 export {getProjects}
