@@ -2,8 +2,11 @@ import { useContext } from "react"
 import { ProjectContext } from '../context/ProjectContext'
 import { useQuery } from '@tanstack/react-query'
 import { getMetrics } from '../api/metrics'
+import { getTraffic } from '../api/traffic'
 import type { Metrics } from '../context/ProjectContext'
+import type { TrafficPoint } from '../components/ui/TrafficChart'
 import MetricCard from '../components/ui/MetricCard'
+import IndexLineChart from '../components/ui/TrafficChart'
 
 
 export default function Dashboard(){
@@ -18,11 +21,18 @@ export default function Dashboard(){
         enabled: !!activeProject
     })
 
-    if (isLoading) return <div>Загрузка...</div>
-    if (isError) return <div>Ошибка загрузки</div>
-    if(!data) return null
+    const { data: trafficData, isLoading: trafficIsLoading, isError: trafficIsError } = useQuery({
+        queryKey: ['traffic',activeProject?.id],
+        queryFn: () => getTraffic(activeProject!.id),
+        enabled: !!activeProject
+    })
+
+    if (isLoading || trafficIsLoading) return <div>Загрузка...</div>
+    if (isError || trafficIsError) return <div>Ошибка загрузки</div>
+    if(!data || !trafficData) return null
 
     const metrics: Metrics = data.data
+    const traffic: TrafficPoint[] = trafficData.data
 
     return (
         <>
@@ -32,6 +42,9 @@ export default function Dashboard(){
                 <MetricCard name="Позиции" value={metrics.positions} />
                 <MetricCard name="Лиды" value={metrics.leads} />
                 <MetricCard name="Конверсия" value={metrics.conversion} />
+            </div>
+            <div className="flex gap-4">
+                <IndexLineChart data = {traffic}/>
             </div>
         </>
     )
