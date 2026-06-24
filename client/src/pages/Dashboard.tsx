@@ -3,10 +3,13 @@ import { ProjectContext } from '../context/ProjectContext'
 import { useQuery } from '@tanstack/react-query'
 import { getMetrics } from '../api/metrics'
 import { getTraffic } from '../api/traffic'
+import { getKeywords } from '../api/keywords'
 import type { Metrics } from '../context/ProjectContext'
 import type { TrafficPoint } from '../components/ui/TrafficChart'
+import type { KeywordValue } from '../components/ui/KeywordsTable'
 import MetricCard from '../components/ui/MetricCard'
 import IndexLineChart from '../components/ui/TrafficChart'
+import KeywordsTable from '../components/ui/KeywordsTable'
 
 
 export default function Dashboard(){
@@ -27,12 +30,19 @@ export default function Dashboard(){
         enabled: !!activeProject
     })
 
-    if (isLoading || trafficIsLoading) return <div>Загрузка...</div>
-    if (isError || trafficIsError) return <div>Ошибка загрузки</div>
-    if(!data || !trafficData) return null
+    const { data: keywordsData, isLoading: keywordsIsLoading, isError: keywordsIsError } = useQuery({
+        queryKey: ['keywords',activeProject?.id],
+        queryFn: () => getKeywords(activeProject!.id),
+        enabled: !!activeProject
+    })
+
+    if (isLoading || trafficIsLoading || keywordsIsLoading) return <div>Загрузка...</div>
+    if (isError || trafficIsError || keywordsIsError) return <div>Ошибка загрузки</div>
+    if(!data || !trafficData || !keywordsData) return null
 
     const metrics: Metrics = data.data
     const traffic: TrafficPoint[] = trafficData.data
+    const keywords: KeywordValue[] = keywordsData.data
 
     return (
         <>
@@ -45,6 +55,9 @@ export default function Dashboard(){
             </div>
             <div className="flex gap-4">
                 <IndexLineChart data = {traffic}/>
+            </div>
+            <div className="flex gap-4">
+                <KeywordsTable data = {keywords}/>
             </div>
         </>
     )

@@ -3,6 +3,7 @@ import cors from 'cors'
 import { projects } from './data/projects.js'
 import { metricsData } from './data/metrics.js'
 import { trafficData } from './data/traffic.js'
+import { keywordsData } from './data/keywords.js'
 
 const app = express()
 
@@ -18,6 +19,10 @@ app.get('/projects/:id/metrics', (req,res) => {
 
 app.get('/projects/:id/traffic', (req,res) => {
         res.json({data: trafficData.filter((item) => item.projectId === Number(req.params.id))})
+    })
+
+app.get('/projects/:id/keywords', (req,res) => {
+        res.json({data: keywordsData.filter((item) => item.projectId === Number(req.params.id))})
     })
 
 app.listen(3000,() => {
