@@ -2,7 +2,7 @@ import { useContext } from "react"
 import { ProjectContext } from '../context/ProjectContext'
 import { useQuery } from '@tanstack/react-query'
 import { getTasks } from "@/api/tasks"
-import TaskList from '@/components/ui/TaskList'
+import KanbanBoard from '@/components/ui/KanbanBoard'
 import type { Task } from "@/api/tasks"
 
 export default function Tasks(){
@@ -23,7 +23,7 @@ export default function Tasks(){
 
     return (
         <div>
-            <TaskList tasksData={tasks} />
+            <KanbanBoard tasksData={tasks} />
         </div>
     )
 }
