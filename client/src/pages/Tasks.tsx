@@ -1,11 +1,15 @@
-import { useContext } from "react"
+import { useContext, useState} from "react"
 import { ProjectContext } from '../context/ProjectContext'
 import { useQuery } from '@tanstack/react-query'
 import { getTasks } from "@/api/tasks"
 import KanbanBoard from '@/components/ui/KanbanBoard'
+import TaskForm  from '@/components/ui/TaskForm'
 import type { Task } from "@/api/tasks"
 
 export default function Tasks(){
+    const [isFormOpen, setIsFormOpen] = useState(false)
+    const [editingTask, setEditingTask] = useState<Task | null>(null)
+
       const context = useContext(ProjectContext)
         if(!context) return null
     const { activeProject } = context
@@ -21,9 +25,19 @@ export default function Tasks(){
 
     const tasks: Task[] = tasksData.data
 
+    const handleEdit = (task: Task) => {
+        setEditingTask(task)
+        setIsFormOpen(true)
+    }
+
     return (
         <div>
-            <KanbanBoard tasksData={tasks} />
+            <button onClick={()=> {setIsFormOpen(true), setEditingTask(null)}}>Добавить задачу +</button>
+            {isFormOpen && <TaskForm task={editingTask ?? undefined} onClose={() =>{ 
+                setIsFormOpen(false)
+                setEditingTask(null)
+                }}/>}
+            <KanbanBoard tasksData={tasks} onEdit={handleEdit} />
         </div>
     )
 }

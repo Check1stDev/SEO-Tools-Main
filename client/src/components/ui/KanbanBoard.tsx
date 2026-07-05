@@ -4,15 +4,15 @@ import KanbanColumn from './KanbanColumn'
 
 type KanbanBoardProps = {
     tasksData: Task[]
+    onEdit: (task: Task) => void
 }
 
-const KanbanBoard = ({tasksData}: KanbanBoardProps) => {
+const KanbanBoard = ({tasksData, onEdit}: KanbanBoardProps) => {
     const todo = tasksData.filter(task => task.taskStatus === 'todo')
     const inProgress = tasksData.filter(task => task.taskStatus === 'in_progress')
     const done = tasksData.filter(task => task.taskStatus === 'done')
     return(
     <>
-        <button>Добавить задачу +</button>
         <div className="flex flex-col md:flex-row gap-6 p-6 items-start min-h-screen bg-gray-50">
             <div className="flex-1 w-full bg-gray-200/50 rounded-xl p-4 shadow-sm border border-gray-200">
                 <div className="flex items-center justify-between mb-4">
@@ -21,7 +21,7 @@ const KanbanBoard = ({tasksData}: KanbanBoardProps) => {
                         {todo.length}
                     </span>
                 </div>
-                <KanbanColumn tasksData={todo}/>
+                <KanbanColumn tasksData={todo} onEdit={onEdit} />
             </div>
 
             <div className="flex-1 w-full bg-blue-50 rounded-xl p-4 shadow-sm border border-blue-100">
@@ -31,7 +31,7 @@ const KanbanBoard = ({tasksData}: KanbanBoardProps) => {
                         {inProgress.length}
                     </span>
                 </div>
-                <KanbanColumn tasksData={inProgress}/>
+                <KanbanColumn tasksData={inProgress} onEdit={onEdit} />
             </div>
 
             <div className="flex-1 w-full bg-green-50 rounded-xl p-4 shadow-sm border border-green-100">
@@ -41,7 +41,7 @@ const KanbanBoard = ({tasksData}: KanbanBoardProps) => {
                         {done.length}
                     </span>
                 </div>
-                <KanbanColumn tasksData={done}/>
+                <KanbanColumn tasksData={done} onEdit={onEdit} />
             </div>
 
         </div>

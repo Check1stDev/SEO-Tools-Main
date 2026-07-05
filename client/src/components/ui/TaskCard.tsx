@@ -6,9 +6,11 @@ import { deleteTask } from '@/api/tasks'
 
 type TaskCardProps = {
   task: Task;
+  onEdit: (task: Task) => void
 };
 
-const TaskCard = ({task}: TaskCardProps) => {
+const TaskCard = ({task, onEdit}: TaskCardProps) => {
+
     const context = useContext(ProjectContext)
         if(!context) return null
     const { activeProject } = context
@@ -50,11 +52,16 @@ const TaskCard = ({task}: TaskCardProps) => {
             <div className="text-xs text-gray-500 mt-3">
                 Создано: {task.createdAt}
             </div>
+            <button 
+                onClick={() => onEdit(task)}
+                type="button" 
+                className="px-3 py-1.5 text-sm font-medium text-white transition-colors duration-200 bg-blue-600 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Редактировать</button>
             <button  
-            type="button" 
-            className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white transition-colors duration-200 bg-red-600 rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-            onClick={()=> mutation.mutate(task.id)} 
-            >
+                type="button" 
+                className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white transition-colors duration-200 bg-red-600 rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                onClick={()=> mutation.mutate(task.id)} 
+                >
             <svg 
                 xmlns="http://www.w3.org/2000/svg" 
                 width="16" 
