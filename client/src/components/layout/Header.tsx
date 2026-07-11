@@ -20,23 +20,22 @@ const context = useContext(ProjectContext)
 
     if(!context) return null
     const { activeProject, setActiveProject} = context
-  
 
-    const handleClick = (project: Project) => {
-        setActiveProject(project)
+    const selectProject = (id: string) => {
+        const p = projects.find((p)=> p.id === Number(id))
+        setActiveProject(p!)
     }
 
     return (<header>
         Apex SEO Platform
         <div>{activeProject?.name}</div>
-        <div>
-            {projects.map((project: Project)=> (
-                    <button key={project.id} onClick={() => handleClick(project)}>
-                        <div>Название: {project.name}</div>
-                        <div>Адрес: {project.url}</div>
-                    </button>
+        <select name="projects" id="" defaultValue="" onChange={(e)=>selectProject(e.target.value)}>
+            {projects.map((project: Project) => (
+                <option key={project.id} value={project.id} >
+                        {project.name}
+                </option>
             ))}
-            </div>
+        </select>
         </header>)
         
 }
