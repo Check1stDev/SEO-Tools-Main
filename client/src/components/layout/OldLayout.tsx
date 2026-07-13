@@ -3,7 +3,7 @@ import Header from './Header'
 import Footer from './Footer'
 import {ProjectProvider} from '../../context/ProjectProvider'
 import AppSidebar from "./Sidebar";
-import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
+import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 
 
 type LayoutProps = {
@@ -13,13 +13,15 @@ type LayoutProps = {
 const Layout = ({children}: LayoutProps) => {
    return (
    <ProjectProvider>
-        <SidebarProvider>
-            <AppSidebar />
-            <SidebarTrigger />
-            <SidebarInset>
-                {children}
-            </SidebarInset>
-        </SidebarProvider>
+            < Header />
+            <SidebarProvider>
+                <AppSidebar />
+                <SidebarInset>
+                    Проверка контента
+                    {children}
+                </SidebarInset>
+            </SidebarProvider>
+            < Footer />
     </ProjectProvider>
     )}
 

@@ -1,15 +1,82 @@
 import { Link, useLocation } from "react-router-dom"
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarHeader,
+  SidebarFooter
+} from "@/components/ui/sidebar"
+import {
+    ChartNoAxesCombined,
+    CheckCheck,
+    Toolbox,
+    Zap
+} from 'lucide-react'
+import ProjectSelector from '../ui/ProjectSelector'
+import { NavUser } from '@/components/ui/NavUser'
 
-export default function Sidebar(){
+export default function AppSidebar(){
     const location = useLocation()
+    const testUser =  {
+        name: 'Maksim',
+        email: 'admin@ApexSEO.com',
+        avatar: ''
+  }
 
-    
-    const getLinkClass = (pathname:string) => {
-        return pathname === location.pathname? 'font-bold text-blue-600' : 'text-gray-600'
-    }
-    return (<aside>
-        <Link className={getLinkClass('/tasks')} to="/tasks">Задачи</Link>
-        <Link className={getLinkClass('/')}to="/">Дашборд</Link>
-        <Link className={getLinkClass('/tools')}to='/tools'>Инструменты</Link>
-    </aside>)
+    return (
+        <Sidebar collapsible="icon">
+            <SidebarHeader>
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton>
+                            <Zap />
+                            <span>Apex SEO Platform</span>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                            <ProjectSelector />
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarHeader>
+            <SidebarContent>
+                <SidebarGroup>
+                    <SidebarGroupContent>
+                            <SidebarMenu>
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton
+                                    asChild
+                                    isActive={location.pathname === '/'}
+                                    >
+                                    <Link to="/"><ChartNoAxesCombined /> Дашборд</Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton
+                                    asChild
+                                    isActive={location.pathname === '/tasks'}
+                                    >
+                                    <Link to="/tasks"><CheckCheck />Задачи</Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton
+                                    asChild
+                                    isActive={location.pathname === '/tools'}
+                                    >
+                                    <Link to="/tools"><Toolbox />Инструменты</Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            </SidebarMenu>
+                    </SidebarGroupContent>
+                </SidebarGroup>
+            </SidebarContent>
+            <SidebarFooter>
+                <NavUser user={testUser}/>
+            </SidebarFooter>
+        </Sidebar>
+        )
 }
