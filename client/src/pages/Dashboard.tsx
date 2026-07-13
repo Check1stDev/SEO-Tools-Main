@@ -4,12 +4,15 @@ import { useQuery } from '@tanstack/react-query'
 import { getMetrics } from '../api/metrics'
 import { getTraffic } from '../api/traffic'
 import { getKeywords } from '../api/keywords'
+import { getTasks } from '../api/tasks'
 import type { Metrics } from '../context/ProjectContext'
 import type { TrafficPoint } from '../components/ui/TrafficChart'
 import type { KeywordValue } from '../components/ui/KeywordsTable'
+import type { Task } from "@/api/tasks"
 import MetricCard from '../components/ui/MetricCard'
 import IndexLineChart from '../components/ui/TrafficChart'
 import KeywordsTable from '../components/ui/KeywordsTable'
+import DashboardTaskItem from '@/components/ui/DashboardTaskItem'
 
 
 export default function Dashboard(){
@@ -36,13 +39,21 @@ export default function Dashboard(){
         enabled: !!activeProject
     })
 
-    if (isLoading || trafficIsLoading || keywordsIsLoading) return <div>Загрузка...</div>
-    if (isError || trafficIsError || keywordsIsError) return <div>Ошибка загрузки</div>
-    if(!data || !trafficData || !keywordsData) return null
+    const { data: tasksData, isLoading: tasksIsLoading, isError: tasksIsError } = useQuery({
+        queryKey: ['tasks',activeProject?.id],
+        queryFn: () => getTasks (activeProject!.id),
+        enabled: !!activeProject
+    })
+
+
+    if (isLoading || trafficIsLoading || keywordsIsLoading || tasksIsLoading) return <div>Загрузка...</div>
+    if (isError || trafficIsError || keywordsIsError || tasksIsError) return <div>Ошибка загрузки</div>
+    if(!data || !trafficData || !keywordsData || !tasksData) return null
 
     const metrics: Metrics = data.data
     const traffic: TrafficPoint[] = trafficData.data
     const keywords: KeywordValue[] = keywordsData.data
+    const tasks: Task[] = tasksData.data
 
     return (
         <>
@@ -56,8 +67,10 @@ export default function Dashboard(){
             <div className="flex gap-4">
                 <IndexLineChart data = {traffic}/>
             </div>
-            <div className="flex gap-4">
-                <KeywordsTable data = {keywords}/>
+            <div className="grid gap-4 grid-flow-col">
+                <div gap-2><KeywordsTable data = {keywords}/></div>
+                <div><DashboardTaskItem tasksData={tasks}/></div>
+                <div><DashboardTaskItem tasksData={tasks}/></div>
             </div>
         </>
     )
