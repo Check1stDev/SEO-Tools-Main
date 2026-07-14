@@ -9,6 +9,7 @@ import { trafficData } from './data/traffic.js'
 import { keywordsData } from './data/keywords.js'
 import { tasksData } from './data/tasks.js'
 import type { Task } from './data/tasks.js'
+import {normalizeWords, countLemmas, mapWordsToLemmas} from './services/morphology.js'
 
 const app = express()
 
@@ -80,6 +81,15 @@ app.post('/projects/:id/tasks', (req,res) => {
         res.json({data: tasksData})
 
     })
+
+// Лемматизатор
+    app.post('/projects/:id/lemmas', (req,res) => {
+        const keywords = req.body as string[]
+        const normalize = normalizeWords(keywords)
+        const lemmas = countLemmas(normalize)
+        res.json({ data: lemmas})
+    })
+
 
 app.listen(3000,() => {
     console.log('Server started on port 3000')

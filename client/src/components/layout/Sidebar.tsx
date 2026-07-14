@@ -8,13 +8,17 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader,
-  SidebarFooter
+  SidebarFooter,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton
 } from "@/components/ui/sidebar"
 import {
     ChartNoAxesCombined,
     CheckCheck,
     Toolbox,
-    Zap
+    Zap,
+    Tags 
 } from 'lucide-react'
 import ProjectSelector from '../ui/ProjectSelector'
 import { NavUser } from '@/components/ui/NavUser'
@@ -69,6 +73,19 @@ export default function AppSidebar(){
                                     >
                                     <Link to="/tools"><Toolbox />Инструменты</Link>
                                     </SidebarMenuButton>
+                                        <SidebarMenuSub>
+                                            <SidebarMenuSubItem>
+                                                <SidebarMenuSubButton 
+                                                    asChild 
+                                                    isActive={location.pathname === '/tools/meta-tags'}
+                                                >
+                                                    <Link to="/tools/meta-tags">
+                                                        <Tags />
+                                                        <span>Мета-теги</span>
+                                                    </Link>
+                                                </SidebarMenuSubButton>
+                                            </SidebarMenuSubItem>
+                                        </SidebarMenuSub>
                                 </SidebarMenuItem>
                             </SidebarMenu>
                     </SidebarGroupContent>
