@@ -68,7 +68,7 @@ export default function Dashboard(){
                 <IndexLineChart data = {traffic}/>
             </div>
             <div className="grid gap-4 grid-flow-col">
-                <div gap-2><KeywordsTable data = {keywords}/></div>
+                <div className="gap-2"><KeywordsTable data = {keywords}/></div>
                 <div><DashboardTaskItem tasksData={tasks}/></div>
                 <div><DashboardTaskItem tasksData={tasks}/></div>
             </div>

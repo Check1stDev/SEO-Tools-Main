@@ -10,6 +10,7 @@ type LemmaItem = {
 }
 
 type morphyArrItem = [string,string[]]
+type ProcessedResult = Record<string, LemmaItem[]>;
 
 const normalizeWords = (arr: arrLemma) => {
     const morphyObj = morphy.lemmatize(arr)
@@ -50,5 +51,14 @@ const mapWordsToLemmas = (arr: arrLemma): LemmaItem[] => {
 
 }
 
-export {normalizeWords, countLemmas, mapWordsToLemmas}
+const processLemmatize = (payload: Record<string, string[]>): ProcessedResult => {
+    const result: ProcessedResult = {}
+    
+    for(const [key,wordsArray] of Object.entries(payload)) {
+        result[key] = mapWordsToLemmas(wordsArray)
+    }
+    return result
+}
+
+export {normalizeWords, countLemmas, mapWordsToLemmas, processLemmatize}
 

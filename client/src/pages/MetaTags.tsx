@@ -1,57 +1,30 @@
-/**
- * ПАМЯТКА ПО СТРУКТУРЕ ДАННЫХ
- * * --- Ввод ---
- * @param keywordsText
- * @param title
- * @param description
- * @param h1
- * * --- Результаты анализа ---
- * @returns lemmaCounts
- * @returns метатеги с привязкой слов к леммам
- * * --- Интерфейс ---
- * @property activeLemma
- */
-
-/**
- *  ПАМЯТКА: ЗАПРОСЫ К БЭКЕНДУ (API)
- * Отправляет текст с ключевыми словами на бэкенд для анализа лемм.
- * * @param {string} keywordsText - Текст или список ключевых фраз.
- * @returns {Promise<any>} Ответ бэкенда (например, lemmaCounts).
- */
-/**const analyzeKeywords = async (keywordsText) => {
-  // логика запроса...
-};
-
-/**
- * Отправляет метатеги страницы на бэкенд для анализа привязки слов к леммам.
- * * @param {Object} params - Объект с мета-данными.
- * @param {string} params.title - Тег Title.
- * @param {string} params.description - Тег Description.
- * @param {string} params.h1 - Заголовок H1.
- * @returns {Promise<any>} Ответ бэкенда с результатами анализа.
- */
-/**const analyzeMetaFields = async ({ title, description, h1 }) => {
-  // логика запроса...
-};*/
 import KeywordsPanel from '@/components/meta-tags/KeywordsPanel'
 import { useContext, useState } from 'react'
-import { ProjectContext } from '@/context/ProjectContext'
 import { useMutation } from '@tanstack/react-query'
-import {submitKeywords} from '@/api/lemmas'
+import { submitKeywords, submitKeywordsMap } from '@/api/lemmas'
+import { KeywordsRawBlock } from '@/components/meta-tags/KeywordsRawBlock'
+import LemmasBlock from '@/components/meta-tags/LemmasBlock'
+import SnippetPreviewBlock from '@/components/meta-tags/SnippetPreviewBlock'
+import MetaTagsForm from '@/components/meta-tags/MetaTagsForm' 
+
+export type LemmaItem = {
+    word: string;
+    lemma: string;
+};
+type ProcessedResult = Record<string, LemmaItem[]>;
 
 export default function MetaTags(){
     const [lemmasList, setLemmasList] = useState<Record<string, number>>({});
-    const context = useContext(ProjectContext)
-        if(!context) return null
-    const { activeProject } = context
+    const [wordsMetaMap, setWordsMetaMap] = useState<ProcessedResult>({}) 
 
     const submitKeys =  useMutation({
         mutationFn: async (arr: string[]) => {
-            const result = await submitKeywords(activeProject!.id, arr) 
+            const result = await submitKeywords(arr) 
             return result
         },
         onSuccess: (data) => {
             setLemmasList(data.data)
+            console.log(data.data)
         }
         })
 
@@ -59,8 +32,39 @@ export default function MetaTags(){
         submitKeys.mutate(arr)
     }
 
+    const submitMetaWords = useMutation({
+        mutationFn: async (arr: Record<string, string[]>) => {
+            const result = await submitKeywordsMap(arr) 
+            return result
+        },
+        onSuccess: (data) => {
+            setWordsMetaMap(data.data)
+            console.log(data.data)
+        }
+    })
+
+    const handleSubmitWordsMap = (arr: Record<string, string[]>) => {
+        submitMetaWords.mutate(arr)
+    }
+
 
     return(
-        <KeywordsPanel onSubmitKeywords={handleSubmitKeywords} />
+        <>
+        <div className='grid grid-cols-1 lg:grid-cols-5 lg:grid-rows-6 gap-4 lg:h-[50vh] mb-5'>
+            <div className='h-100 lg:h-auto lg:col-span-1 lg:row-span-6'>
+                <KeywordsPanel onSubmitKeywords={handleSubmitKeywords} />
+            </div>
+            <div className='h-100 lg:h-auto lg:col-span-1 lg:row-span-6'>
+                <LemmasBlock data={lemmasList}/>
+            </div>
+            <div className='h-100 lg:h-auto lg:col-span-3 lg:row-span-6'>
+                <SnippetPreviewBlock />
+                <MetaTagsForm onSubmitWordsMap={handleSubmitWordsMap}/>
+            </div>
+         </div>
+         <div className='mb-5'>
+            <KeywordsRawBlock />
+         </div>
+        </>
     )
 }

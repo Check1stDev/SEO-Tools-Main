@@ -1,8 +1,13 @@
 import axios from "axios";
 
-const submitKeywords = async (id: number, keywords: string[]) => {
-    const result = await axios.post(`http://localhost:3000/projects/${id}/lemmas`, keywords)
+const submitKeywords = async (keywords: string[]) => {
+    const result = await axios.post(`http://localhost:3000/lemmas`, keywords)
     return result.data 
 }
 
-export { submitKeywords }
+const submitKeywordsMap = async (keywords: Record<string, string[]>) => {
+    const result = await axios.post(`http://localhost:3000/lemmas/map`, keywords)
+    return result.data 
+}
+
+export { submitKeywords, submitKeywordsMap }
