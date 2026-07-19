@@ -1,100 +1,247 @@
-type KeywordsPanelProps ={ 
-    metaData: { title: string; description: string; h1: string; url: string }
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card"
+
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
+import { Progress } from "@/components/ui/progress"
+import { useState } from "react"
+import { Check, Copy } from "lucide-react"
+
+type MetaTagsFormProps = {
+    metaData: {
+        title: string
+        description: string
+        h1: string
+        url: string
+    }
     onChange: (field: string, value: string) => void
-    onSubmit: () => void;
+    onSubmit: () => void
+    onClear: () => void
 }
 
-const MetaTagsForm = ({metaData, onChange, onSubmit }: KeywordsPanelProps) => {
-    return (
-        <div className="flex w-full flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white text-zinc-950 shadow-sm">
-            <div className="flex flex-col space-y-1.5 p-6 pb-4">
-                <h3 className="font-semibold leading-none tracking-tight">Редактор метатегов</h3>
-                <p className="text-sm text-zinc-500">Заполните данные для страницы</p>
-            </div>
+type LengthStatus = "success" | "warning" | "destructive"
+type MetaField = "title" | "description" | "h1"
 
+const getLengthStatus = (
+    length: number,
+    visibleLimit: number,
+    acceptableLimit: number
+): LengthStatus => {
+    if (length <= visibleLimit) return "success"
+    if (length <= acceptableLimit) return "warning"
+
+    return "destructive"
+}
+
+const progressColors: Record<LengthStatus, string> = {
+    success: "bg-success",
+    warning: "bg-warning",
+    destructive: "bg-destructive",
+}
+
+const counterColors: Record<LengthStatus, string> = {
+    success: "text-success",
+    warning: "text-warning",
+    destructive: "text-destructive",
+}
+
+const MetaTagsForm = ({metaData, onChange, onSubmit, onClear}: MetaTagsFormProps) => {
+
+    const [isCopied, setIsCopied] = useState(false)
+    
+        const metaLength = (meta: MetaField): number =>{
+            return metaData[meta].length
+        } 
+
+        const titleStatus = getLengthStatus(metaLength('title'), 60, 70)
+        const descriptionStatus = getLengthStatus(metaLength('description'), 160, 170)
+        const h1Status = getLengthStatus(metaLength('h1'), 60, 70)
+
+        const metaProgress = (metaLength: number,lengthMax: number) =>{ 
+        return Math.min(
+            (metaLength / lengthMax) * 100,
+            100
+        )}
+        
+        const titleProgress = metaProgress(metaLength('title'), 70)
+        const descriptionProgress = metaProgress(metaLength('description'), 170)
+        const h1Progress = metaProgress(metaLength('h1'), 70)
+
+        const handleCopy = async () => {
+            const text = [
+                `URL: ${metaData.url}`,
+                `Title: ${metaData.title}`,
+                `Description: ${metaData.description}`,
+                `H1: ${metaData.h1}`,
+            ].join("\n")
+
+            await navigator.clipboard.writeText(text)
+
+            setIsCopied(true)
+
+            setTimeout(() => {
+                setIsCopied(false)
+            }, 2000)
+        }
+    
+
+    return (
+        <Card className="w-full overflow-hidden py-0">
+            <CardHeader className="gap-1 border-b px-5 py-4">
+                <CardTitle className="text-base">
+                    Редактор метатегов
+                </CardTitle>
+
+                <CardDescription>
+                    Заполните данные страницы и проверьте результат в предпросмотре
+                </CardDescription>
+            </CardHeader>
             {/* Контентная часть с полями ввода */}
-            <div className="flex flex-col gap-4 p-6 pt-0">
+            <CardContent className="grid gap-5 px-5 py-5">
                 
                 {/* Поле URL */}
-                <div className="flex flex-col gap-1.5">
-                    <label htmlFor="url" className="text-sm font-medium leading-none">URL</label>
-                    <input
+                <div className="grid gap-2">
+                    <Label htmlFor="url">URL</Label>
+
+                    <Input
                         id="url"
                         value={metaData.url}
-                        onChange={(e)=>onChange ('url', e.target.value)}
-                        type="text"
+                        onChange={(e) => onChange("url", e.target.value)}
                         placeholder="https://site.ru/page/"
-                        className="flex h-9 w-full rounded-md border border-zinc-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950"
                     />
                 </div>
 
                 {/* Поле H1 */}
-                <div className="flex flex-col gap-1.5">
-                    <label htmlFor="h1" className="text-sm font-medium leading-none">Заголовок (H1)</label>
-                    <input
+                <div className="grid gap-2">
+                    <div className="flex items-center justify-between gap-3">
+                        <Label htmlFor="h1">Заголовок (H1)</Label>
+                        <span className={`text-xs font-medium tabular-nums ${counterColors[h1Status]}`}>
+                            {metaData.h1.length} / 60
+                        </span>
+                    </div>
+                    <Input
                         id="h1"
                         value={metaData.h1}
                         onChange={(e)=>onChange ('h1', e.target.value)}
-                        type="text"
                         placeholder="Главный заголовок на странице"
-                        className="flex h-9 w-full rounded-md border border-zinc-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950"
+                    />
+
+                    <Progress
+                        value={h1Progress}
+                        className="h-1.5"
+                        indicatorClassName={progressColors[h1Status]}
                     />
                 </div>
 
                 {/* Поле Title */}
-                <div className="flex flex-col gap-1.5">
-                    <label htmlFor="title" className="text-sm font-medium leading-none">Title</label>
-                    <input
+                <div className="grid gap-2">
+                    <div className="flex items-center justify-between gap-3">
+                        <Label htmlFor="title">Title</Label>
+
+                        <span className={`text-xs font-medium tabular-nums ${counterColors[titleStatus]}`}>
+                            {metaData.title.length} / 60
+                        </span>
+                    </div>
+
+                    <Input
                         id="title"
                         value={metaData.title}
                         onChange={(e)=> onChange ('title', e.target.value)}
-                        type="text"
                         placeholder="Оптимизированный Title для выдачи"
-                        className="flex h-9 w-full rounded-md border border-zinc-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950"
+                    />
+
+                    <Progress
+                        value={titleProgress}
+                        className="h-1.5"
+                        indicatorClassName={progressColors[titleStatus]}
                     />
                 </div>
 
                 {/* Поле Description */}
-                <div className="flex flex-col gap-1.5">
-                    <label htmlFor="description" className="text-sm font-medium leading-none">Description</label>
-                    <input
+                <div className="grid gap-2">
+                    <div className="flex items-center justify-between gap-3">
+                        <Label htmlFor="description">
+                            Description
+                        </Label>
+
+                        <span className={`text-xs font-medium tabular-nums ${counterColors[descriptionStatus]}`}>
+                            {metaData.description.length} / 160
+                        </span>
+                    </div>
+
+                    <Textarea
                         id="description"
                         value={metaData.description}
-                        onChange={(e)=> onChange ('description', e.target.value)}
+                        onChange={(e) => onChange("description", e.target.value)}
                         placeholder="Краткое описание страницы..."
-                        className="flex min-h-20 w-full resize-none rounded-md border border-zinc-200 bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 custom-scrollbar"
+                        className="field-sizing-fixed min-h-24 resize-none"
+                    />
+                    <Progress
+                        value={descriptionProgress}
+                        className="h-1.5"
+                        indicatorClassName={progressColors[descriptionStatus]}
                     />
                 </div>
 
-            </div>
+            </CardContent>
 
             {/* Подвал с кнопками */}
-            <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 p-6 pt-0">
-                
-                <button
+           <CardFooter className="flex-col-reverse gap-2 border-t bg-muted/30 px-5 py-3 sm:flex-row sm:justify-end">
+                <Button
                     type="button"
-                    className="inline-flex w-full sm:w-auto h-9 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950"
+                    variant="ghost"
+                    onClick={onClear}
+                    disabled={
+                        !metaData.url &&
+                        !metaData.title &&
+                        !metaData.description &&
+                        !metaData.h1
+                    }
                 >
                     Очистить
-                </button>
+                </Button>
 
-                <button
+                <Button
                     type="button"
-                    className="inline-flex w-full sm:w-auto h-9 items-center justify-center rounded-md border border-zinc-200 bg-white px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950"
+                    variant="outline"
+                    onClick={handleCopy}
+                    disabled={
+                        !metaData.url &&
+                        !metaData.title &&
+                        !metaData.description &&
+                        !metaData.h1
+                    }
                 >
-                    Скопировать
-                </button>
-                
-                <button
+                    {isCopied ? (
+                        <Check className="size-4 text-success" />
+                    ) : (
+                        <Copy className="size-4" />
+                    )}
+
+                    {isCopied ? "Скопировано" : "Скопировать"}
+                </Button>
+
+                <Button
                     type="button"
-                    className="inline-flex w-full sm:w-auto h-9 items-center justify-center rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-zinc-50 shadow transition-colors hover:bg-zinc-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950"
                     onClick={onSubmit}
+                    disabled={
+                        !metaData.title &&
+                        !metaData.description &&
+                        !metaData.h1
+                    }
                 >
-                    Отправить
-                </button>
-                
-            </div>
-        </div>
+                    Проверить метатеги
+                </Button>
+            </CardFooter>
+        </Card>
     );
 };
 

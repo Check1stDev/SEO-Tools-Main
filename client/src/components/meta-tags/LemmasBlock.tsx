@@ -1,3 +1,14 @@
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card"
+
+import { Badge } from "@/components/ui/badge"
+import { ScrollArea } from "@/components/ui/scroll-area"
+
 type LemmasBlockProps = {
     data: Record<string, {
         count: number;
@@ -12,40 +23,70 @@ type LemmasBlockProps = {
 const LemmasBlock = ({data, onHover}: LemmasBlockProps) => {
     const lemmasArr = Object.entries(data).sort((a, b) => b[1].count - a[1].count);
     return(
-        <div className="flex h-full w-full flex-col rounded-xl border border-zinc-200 bg-white text-zinc-950 shadow-sm">
-        <div className="flex flex-col space-y-1.5 p-6">
-            <div className="flex items-center justify-between">
-            <h3 className="font-semibold leading-none tracking-tight">Леммы</h3>
-            <span className="inline-flex items-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-semibold text-zinc-900">
-                {lemmasArr.length}
-            </span>
-            </div>
-            <p className="text-sm text-zinc-500">
-            Найденные слова и количество повторений
-            </p>
-        </div>
-        <div className="p-6 pt-0 flex-1 overflow-y-auto min-h-0">
-            <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-x-4 gap-y-3 text-sm">
-            <div className="contents text-zinc-500">
-                <div className="border-b border-zinc-200 pb-2 font-medium">Лемма</div>
-                <div className="border-b border-zinc-200 pb-2 text-right font-medium">Всего</div>
-                <div className="border-b border-zinc-200 pb-2 text-right font-medium">t</div>
-                <div className="border-b border-zinc-200 pb-2 text-right font-medium">d</div>
-                <div className="border-b border-zinc-200 pb-2 text-right font-medium">h1</div>
-            </div>
-            {lemmasArr.map(([lemma, counts], index)=> {
-            return <div key={index} className="contents hover:bg-zinc-50" onMouseEnter={() => onHover(lemma)} onMouseLeave={() => onHover('')}>
-                <div className="py-1">{lemma}</div>
-                <div className="py-1 text-right tabular-nums">{counts.count}</div>
-                <div className="py-1 text-right tabular-nums text-zinc-400">{counts.title}</div>
-                <div className="py-1 text-right tabular-nums text-zinc-400">{counts.description}</div>
-                <div className="py-1 text-right tabular-nums text-zinc-400">{counts.h1}</div>
-            </div>                
+        <Card className="flex h-full min-h-[420px] w-full flex-col overflow-hidden py-0">
+            <CardHeader className="gap-1 border-b px-5 py-4">
+                <div className="flex items-start justify-between gap-3">
+                    <div className="space-y-1">
+                        <CardTitle className="text-base">
+                            Леммы
+                        </CardTitle>
 
-            })}
-            </div>
-        </div>
-        </div>
+                        <CardDescription>
+                            Найденные слова и количество повторений
+                        </CardDescription>
+                    </div>
+
+                    <Badge
+                        variant="secondary"
+                        className="shrink-0 bg-brand-green/25 text-brand-green-foreground"
+                    >
+                        {lemmasArr.length}
+                    </Badge>
+                </div>
+            </CardHeader>
+                <CardContent className="flex min-h-0 flex-1 flex-col px-5 py-4">
+                    <div className="grid shrink-0 grid-cols-[minmax(0,1fr)_48px_32px_32px_32px] gap-x-3 border-b px-2 pb-2 text-xs font-medium text-muted-foreground">
+                        <div>Лемма</div>
+                        <div className="text-center">Всего</div>
+                        <div className="text-center">T</div>
+                        <div className="text-center">D</div>
+                        <div className="text-center">H1</div>
+                    </div>
+
+                    <ScrollArea className="h-0 min-h-0 flex-1">
+                        <div className="space-y-0.5 py-2 pr-3">
+                        {lemmasArr.map(([lemma, counts]) => (
+                            <div
+                                key={lemma}
+                                className="grid grid-cols-[minmax(0,1fr)_48px_32px_32px_32px] gap-x-3 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent/60"
+                                onMouseEnter={() => onHover(lemma)}
+                                onMouseLeave={() => onHover("")}
+                            >
+                                <div className="truncate font-medium">
+                                    {lemma}
+                                </div>
+
+                                <div className="text-right tabular-nums">
+                                    {counts.count}
+                                </div>
+
+                                <div className="text-right tabular-nums text-muted-foreground">
+                                    {counts.title}
+                                </div>
+
+                                <div className="text-right tabular-nums text-muted-foreground">
+                                    {counts.description}
+                                </div>
+
+                                <div className="text-right tabular-nums text-muted-foreground">
+                                    {counts.h1}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </ScrollArea>
+            </CardContent>
+        </Card>
     )
 }
 export default LemmasBlock

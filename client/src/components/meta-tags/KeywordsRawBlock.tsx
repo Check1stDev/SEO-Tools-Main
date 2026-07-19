@@ -1,6 +1,15 @@
 
 import { useState } from "react";
-import { FileText, Copy, Check } from "lucide-react";
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card"
+
+import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { FileText, Copy, Check } from "lucide-react"
 
 // Собираем текст через join('\n'), чтобы избежать проблем с отступами (табами) в коде
 const rawKeywords = [
@@ -31,31 +40,45 @@ export function KeywordsRawBlock() {
   };
 
   return (
-    <div className="w-full max-w-xl border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden dark:border-gray-800 dark:bg-gray-950">
-      <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-200 dark:bg-gray-900 dark:border-gray-800">
-        <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-          <FileText className="w-4 h-4 text-gray-500" />
-          Пример списка ключевых слов
-        </div>
-        <button
-          onClick={handleCopy}
-          className="inline-flex items-center justify-center p-2 text-gray-500 hover:bg-gray-200 hover:text-gray-900 rounded-md transition-colors dark:hover:bg-gray-800 dark:hover:text-gray-100"
-          title="Скопировать всё"
-        >
-          {isCopied ? (
-            <Check className="w-4 h-4 text-green-600 dark:text-green-500" />
-          ) : (
-            <Copy className="w-4 h-4" />
-          )}
-        </button>
-      </div>
+    <Card className="w-full overflow-hidden py-0">
+      <CardHeader className="border-b bg-muted/30 px-5 py-4">
+          <div className="flex items-center justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-2">
+                  <FileText className="size-4 shrink-0 text-brand-blue" />
+
+                  <CardTitle className="truncate text-sm font-medium">
+                      Пример списка ключевых слов
+                  </CardTitle>
+              </div>
+
+              <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className={
+                      isCopied
+                          ? "size-8 text-success hover:text-success"
+                          : "size-8 text-muted-foreground"
+                  }
+                  onClick={handleCopy}
+                  aria-label={isCopied ? "Скопировано" : "Скопировать ключевые слова"}
+              >
+                  {isCopied ? (
+                      <Check className="size-4" />
+                  ) : (
+                      <Copy className="size-4" />
+                  )}
+              </Button>
+          </div>
+      </CardHeader>
 
       {/* Сам блок с текстом */}
-      <div className="p-4 overflow-x-auto">
-        <pre className="text-sm text-gray-800 font-mono whitespace-pre-wrap dark:text-gray-200">
-          {rawKeywords}
-        </pre>
-      </div>
-      
-    </div>
+      <CardContent className="p-0">
+          <ScrollArea className="h-72">
+              <pre className="whitespace-pre-wrap break-words p-5 font-mono text-sm leading-6 text-foreground">
+                  {rawKeywords}
+              </pre>
+          </ScrollArea>
+      </CardContent>
+    </Card>
   );}

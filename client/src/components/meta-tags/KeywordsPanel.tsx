@@ -1,3 +1,16 @@
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card"
+
+import { Textarea } from "@/components/ui/textarea"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+
 import { useState } from "react";
 
 type KeywordsPanelProps = {
@@ -20,41 +33,56 @@ const sendKeywords = (str: string) => {
     }
 
   return (
-        <div className="flex h-full w-full flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white text-zinc-950 shadow-sm">
-            
-            <div className="flex flex-col space-y-1.5 p-6 pb-4">
-                <h3 className="font-semibold leading-none tracking-tight">Ключевые слова</h3>
-                <p className="text-sm text-zinc-500">
-                    Введите ключевые фразы с новой строки
-                </p>
-            </div>
+        <Card className="flex h-full min-h-105 w-full flex-col overflow-hidden py-0">
+            <CardHeader className="gap-1 border-b px-5 py-4">
+                <div className="flex items-start justify-between gap-3">
+                    <div className="space-y-1">
+                        <CardTitle className="text-base">
+                            Ключевые слова
+                        </CardTitle>
 
-            <div className="flex flex-1 flex-col p-6 pt-0 min-h-0">
-                <textarea
-                    className="flex-1 w-full resize-none rounded-md border border-zinc-200 bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 custom-scrollbar"
-                    placeholder="купить квартиру..."
+                        <CardDescription>
+                            Введите ключевые фразы с новой строки
+                        </CardDescription>
+                    </div>
+
+                    <Badge
+                        variant="secondary"
+                        className="shrink-0 bg-brand-green/25 text-brand-green-foreground"
+                    >
+                        {sendKeywords(keysListState).length}
+                    </Badge>
+                </div>
+            </CardHeader>
+
+            <CardContent className="flex min-h-0 flex-1 px-5 py-4">
+                <Textarea
+                    className="field-sizing-fixed min-h-[280px] flex-1 resize-none overflow-y-auto bg-background"
+                    placeholder={"купить квартиру\nцены на квартиры\nновостройки Москвы"}
                     value={keysListState}
                     onChange={handleChange}
                 />
-            </div>
-            <div className="flex items-center justify-end space-x-2 p-6 pt-0">
-                <button
+            </CardContent>
+
+           <CardFooter className="justify-end gap-2 border-t bg-muted/30 px-5 py-3">
+                <Button
                     type="button"
-                    className="inline-flex h-9 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950"
-                    onClick={() => setKeysListState('')}
+                    variant="ghost"
+                    disabled={!keysListState}
+                    onClick={() => setKeysListState("")}
                 >
                     Сбросить
-                </button>
-                
-                <button
+                </Button>
+
+                <Button
                     type="button"
-                    className="inline-flex h-9 items-center justify-center rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-zinc-50 shadow transition-colors hover:bg-zinc-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950"
+                    disabled={!keysListState.trim()}
                     onClick={() => onSubmitKeywords(sendKeywords(keysListState))}
                 >
-                    Отправить
-                </button>
-            </div>
-        </div>
+                    Анализировать
+                </Button>
+            </CardFooter>
+        </Card>
     );
 };
 
