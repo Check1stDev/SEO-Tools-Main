@@ -15,8 +15,8 @@ const Layout = ({children}: LayoutProps) => {
    <ProjectProvider>
         <SidebarProvider>
             <AppSidebar />
-            <SidebarTrigger />
             <SidebarInset>
+                <Header />
                 {children}
             </SidebarInset>
         </SidebarProvider>

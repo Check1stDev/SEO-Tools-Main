@@ -6,7 +6,9 @@ import { KeywordsRawBlock } from '@/components/meta-tags/KeywordsRawBlock'
 import LemmasBlock from '@/components/meta-tags/LemmasBlock'
 import SnippetPreviewBlock from '@/components/meta-tags/SnippetPreviewBlock'
 import MetaTagsForm from '@/components/meta-tags/MetaTagsForm' 
-import {keyScissors, lightLemmasExample, countLemmaMetaTags} from '@/utils/SeoMetaCalculations'
+import { lightLemmasExample, countLemmaMetaTags } from '@/utils/SeoMetaCalculations'
+
+
 
 export type LemmaItem = {
     word: string;

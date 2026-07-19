@@ -22,6 +22,7 @@ import {
 } from 'lucide-react'
 import ProjectSelector from '../ui/ProjectSelector'
 import { NavUser } from '@/components/ui/NavUser'
+import myLogo from '@/assets/Logo.png';
 
 export default function AppSidebar(){
     const location = useLocation()
@@ -36,9 +37,20 @@ export default function AppSidebar(){
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton>
-                            <Zap />
-                            <span>Apex SEO Platform</span>
+                        <SidebarMenuButton size="lg" asChild>
+                            <a href="/">
+                                <div className="flex aspect-square size-8 items-center justify-center rounded-lg">
+                                <img 
+                                    src={myLogo} 
+                                    alt="Логотип" 
+                                    className="size-30 object-contain" 
+                                    />
+                                </div>
+                                <div className="grid flex-1 text-left text-sm leading-tight">
+                                <span className="truncate font-medium">Apex SEO</span>
+                                <span className="truncate text-xs">Platform</span>
+                                </div>
+                            </a>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
