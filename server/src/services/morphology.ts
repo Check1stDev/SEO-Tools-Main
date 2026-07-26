@@ -12,12 +12,37 @@ type LemmaItem = {
 type morphyArrItem = [string,string[]]
 type ProcessedResult = Record<string, LemmaItem[]>;
 
+const clearString = (str: string) => {
+        const arr = str
+            .replace(/\p{P}/gu, '')
+            .trim()
+            .split(' ')
+        return arr
+    }
+
+const clearStringWithIndex = (str: string) => {
+    const regex = /[а-яёa-z0-9]+/gi
+    const matches = [...str.matchAll(regex)]
+
+    return matches.map((match) => {
+        return {
+            word: match[0],
+            lemma: match[0], 
+            index: match.index 
+        }
+    })
+}
+
 const normalizeWords = (arr: arrLemma) => {
     const morphyObj = morphy.lemmatize(arr)
+    console.log(morphyObj)
     const morphyArr = Object.values(morphyObj) as string[][]
     const result = morphyArr.map((word,index) => {
         if (!word[0]) {
             return arr[index]
+        }
+        if (word[1]) {
+            return word[1]
         }
         return word[0]
     }
@@ -41,12 +66,11 @@ const countLemmas = (arr: arrLemma) => {
 const mapWordsToLemmas = (arr: arrLemma): LemmaItem[] => {
     const morphyObj = morphy.lemmatize(arr)
     const morphyArr = Object.entries(morphyObj) as morphyArrItem[]
-    return morphyArr.map((item)=>{
-        const [ key, value] = item 
-        if(value.length === 0) {
-            return { word: key.toLowerCase(), lemma: key.toLowerCase() }
-        }
-        return { word: key.toLowerCase(), lemma: value[0]!.toLowerCase() }
+    return morphyArr.map(([ key, value] )=>{
+
+    const lemma = value?.[0] ?? key
+
+        return { word: key.toLowerCase(), lemma: lemma.toLowerCase() }
     })
 
 }
@@ -60,5 +84,63 @@ const processLemmatize = (payload: Record<string, string[]>): ProcessedResult =>
     return result
 }
 
-export {normalizeWords, countLemmas, mapWordsToLemmas, processLemmatize}
+const textToLemmas = (str: string) => {
+    const lemmasText = clearStringWithIndex(str)
+    const lemmasArr = lemmasText.map((item) => {
+        return item.word
+    })
+   
+    const morphyObj = morphy.lemmatize(lemmasArr)
 
+    return lemmasText.map((item) => {
+        const lemmaItem = morphyObj[item.word.toUpperCase()]
+        if (lemmaItem.length > 1){
+           return {
+            word: item.word,
+            lemma: lemmaItem[1],
+            index: item.index
+           }
+        }
+        return {
+            word: item.word,
+            lemma: lemmaItem[0],
+            index: item.index
+           }
+    })
+}
+
+const findKeyInText = (textLemmas: { word: string, lemma: string, index: number }[], keyLemmas: string[]) => {
+    const n = keyLemmas.length
+    if (n === 1) {
+       return textLemmas
+        .filter(item => item.lemma === keyLemmas[0])
+        .map(item => [item])
+    }
+    const result = []
+    const checkKeyLemmas = keyLemmas.sort()
+    for(let i = 0; i <= (textLemmas.length - n); i++ ) {
+       const checkKey = textLemmas.slice (i, i + n)
+       const keySliceValues = checkKey.map(item => item.lemma)
+       if (JSON.stringify(keySliceValues.sort()) === JSON.stringify(checkKeyLemmas)) {
+         result.push(checkKey)
+       }
+    }
+    return result
+}
+
+const searchAllKeywords = (text: string, keywords: string[]) => {
+    const textLemmas = textToLemmas(text)
+    return keywords.map((keyword) => {
+        const keyLemmas = [...new Set(textToLemmas(keyword).map(item => item.lemma))]
+        const matches = findKeyInText(textLemmas,keyLemmas)
+
+        return {keyword, matches}
+    })
+}
+
+const text = "Купить квартиру в Москве. Продажа квартир от застройщика."
+const keywords = ["купить квартиру", "квартира", "продажа квартир"]
+
+console.log(JSON.stringify(searchAllKeywords(text, keywords), null, 2))
+
+export {normalizeWords, countLemmas, mapWordsToLemmas, processLemmatize}

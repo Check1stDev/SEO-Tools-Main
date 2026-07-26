@@ -155,10 +155,12 @@ export default function MetaTags(){
                     />
                 </div>
             </div>
-            <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 mb-5'>
-                <KeywordsRawBlock />
+            <div className='grid col-span-1 lg:grid-cols-4 gap-6 mb-5'>
+                <div className='grid-span-1'>
+                    <KeywordsRawBlock/>
+                </div>
                 {/* Заглушка под нейросеть */}
-                <div className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50/50 p-6 flex flex-col items-center justify-center text-center gap-2">
+                <div className="col-span-3 rounded-xl border border-dashed border-zinc-300 bg-zinc-50/50 p-6 flex flex-col items-center justify-center text-center gap-2">
                     <div className="p-2 rounded-full bg-indigo-50 text-indigo-600">
                         <BotMessageSquare />
                     </div>
