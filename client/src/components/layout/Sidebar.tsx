@@ -97,6 +97,17 @@ export default function AppSidebar(){
                                                     </Link>
                                                 </SidebarMenuSubButton>
                                             </SidebarMenuSubItem>
+                                            <SidebarMenuSubItem>
+                                                <SidebarMenuSubButton 
+                                                    asChild 
+                                                    isActive={location.pathname === '/tools/key-text-check'}
+                                                >
+                                                    <Link to="/tools/key-text-check">
+                                                        <Zap />
+                                                        <span>Проверка ключей</span>
+                                                    </Link>
+                                                </SidebarMenuSubButton>
+                                            </SidebarMenuSubItem>
                                         </SidebarMenuSub>
                                 </SidebarMenuItem>
                             </SidebarMenu>

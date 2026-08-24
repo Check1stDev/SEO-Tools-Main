@@ -9,7 +9,15 @@ import { trafficData } from './data/traffic.js'
 import { keywordsData } from './data/keywords.js'
 import { tasksData } from './data/tasks.js'
 import type { Task } from './data/tasks.js'
-import {normalizeWords, countLemmas, mapWordsToLemmas, processLemmatize} from './services/morphology.js'
+import {normalizeWords, countLemmas, mapWordsToLemmas, processLemmatize, searchAllKeywords} from './services/morphology.js'
+import {getSpamPercent, getAcademicNausea, waterPercent} from './services/textMetrics.js'
+
+
+type keywordsFromTestCheck = {
+    main: string[]
+    lsi: string[],
+    highlight: string[]
+}
 
 const app = express()
 
@@ -95,6 +103,30 @@ app.post('/projects/:id/tasks', (req,res) => {
         const wordsMap = processLemmatize(words)
         res.json({ data: wordsMap})
     } )
+// Поиск ключей
+
+    app.post('/searchKeys', (req,res) => {
+        
+        const keywords = req.body.keywords as keywordsFromTestCheck
+        const text = req.body.text as string
+
+        const mainResult = searchAllKeywords(text, keywords.main)
+        const lsiResult = searchAllKeywords(text, keywords.lsi)
+        const highlightResult = searchAllKeywords(text, keywords.highlight)
+
+        const spamPercent = getSpamPercent(text)
+        const academicNausea = getAcademicNausea(text)
+        const water = waterPercent(text)
+        
+        res.json({ data: {
+            main: mainResult,
+            lsi: lsiResult,
+            highlight: highlightResult,
+            spamPercent: spamPercent,
+            academicNausea: academicNausea,
+            water: water
+        }})
+    })
 
 
 app.listen(3000,() => {

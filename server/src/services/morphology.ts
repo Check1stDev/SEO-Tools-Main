@@ -35,7 +35,6 @@ const clearStringWithIndex = (str: string) => {
 
 const normalizeWords = (arr: arrLemma) => {
     const morphyObj = morphy.lemmatize(arr)
-    console.log(morphyObj)
     const morphyArr = Object.values(morphyObj) as string[][]
     const result = morphyArr.map((word,index) => {
         if (!word[0]) {
@@ -143,4 +142,4 @@ const keywords = ["купить квартиру", "квартира", "прод
 
 console.log(JSON.stringify(searchAllKeywords(text, keywords), null, 2))
 
-export {normalizeWords, countLemmas, mapWordsToLemmas, processLemmatize}
+export {normalizeWords, countLemmas, mapWordsToLemmas, processLemmatize, searchAllKeywords}

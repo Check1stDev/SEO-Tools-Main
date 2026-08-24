@@ -14,23 +14,50 @@ import { Badge } from "@/components/ui/badge"
 import { useState } from "react";
 
 type KeywordsPanelProps = {
-    onSubmitKeywords: (keywords: string[]) => void
+    buttonSubmit?: string
+    panelName?: string
+    buttonState?: boolean
+    onSubmitKeywords?: (keywords: string[]) => void
+    splitMode?: 'words' | 'lines'
+    value?: string
+    onChange?: (keywords: string) => void
 }
-const KeywordsPanel = ({onSubmitKeywords}: KeywordsPanelProps) => {
+const KeywordsPanel = ({buttonSubmit, panelName, buttonState = true, onSubmitKeywords, splitMode = 'words',value,onChange}: KeywordsPanelProps) => {
 
 const [keysListState, setKeysListState]= useState('')
 
+const isControlled = value !== undefined
+
 const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const value = e.target.value
+    const value: string = e.target.value 
+    if (isControlled && onChange) {
+       return onChange(value)
+    }
     setKeysListState(value)
 }
 
-const sendKeywords = (str: string) => {
-    const arr = str
-            .trim()
-            .split(/[ \n]+/);
-    return arr.filter(word=> word !== '')
+const handleClear = () => {
+    if (isControlled && onChange) {
+        onChange('')
+        return
     }
+    setKeysListState('')
+}
+
+const sendKeywords = (str: string) => {
+    if (splitMode === 'lines') {
+            const arr = str
+                    .split('\n');
+            const trimArr = arr.map(item => item.trim())
+            return trimArr.filter(word => word !== '')
+    }
+            const arr = str
+                    .trim()
+                    .split(/[ \n]+/);
+            return arr.filter(word => word !== '')
+    }
+
+const currentValue = isControlled ? value : keysListState
 
   return (
         <Card className="flex h-full min-h-105 w-full flex-col overflow-hidden py-0">
@@ -38,7 +65,7 @@ const sendKeywords = (str: string) => {
                 <div className="flex items-start justify-between gap-3">
                     <div className="space-y-1">
                         <CardTitle className="text-base">
-                            Ключевые слова
+                            {panelName ? panelName : 'Ключевые слова'}
                         </CardTitle>
 
                         <CardDescription>
@@ -50,7 +77,7 @@ const sendKeywords = (str: string) => {
                         variant="secondary"
                         className="shrink-0 bg-brand-green/25 text-brand-green-foreground"
                     >
-                        {sendKeywords(keysListState).length}
+                        {sendKeywords(currentValue).length}
                     </Badge>
                 </div>
             </CardHeader>
@@ -59,7 +86,7 @@ const sendKeywords = (str: string) => {
                 <Textarea
                     className="field-sizing-fixed min-h-[280px] flex-1 resize-none overflow-y-auto bg-background"
                     placeholder={"купить квартиру\nцены на квартиры\nновостройки Москвы"}
-                    value={keysListState}
+                    value={currentValue}
                     onChange={handleChange}
                 />
             </CardContent>
@@ -68,19 +95,19 @@ const sendKeywords = (str: string) => {
                 <Button
                     type="button"
                     variant="ghost"
-                    disabled={!keysListState}
-                    onClick={() => setKeysListState("")}
+                    disabled={!currentValue}
+                    onClick={handleClear}
                 >
                     Сбросить
                 </Button>
-
-                <Button
+                {buttonState &&
+                    (<Button
                     type="button"
-                    disabled={!keysListState.trim()}
-                    onClick={() => onSubmitKeywords(sendKeywords(keysListState))}
+                    disabled={!currentValue.trim()}
+                    onClick={() => onSubmitKeywords?.(sendKeywords(currentValue))}
                 >
-                    Анализировать
-                </Button>
+                    {buttonSubmit ? buttonSubmit : 'Анализировать'}
+                </Button>)}
             </CardFooter>
         </Card>
     );
