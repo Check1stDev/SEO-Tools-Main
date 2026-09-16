@@ -134,7 +134,7 @@ export default function KeyTextCheck() {
     }
             const arr = str
                     .trim()
-                    .split(/[ \n]+/);
+                    .split(/[\s,.;:!?]+/);
             return arr.filter(word => word !== '')
     }
 
@@ -262,7 +262,7 @@ export default function KeyTextCheck() {
                     }
                 lastIndex = endIdex
                 parts.push(before)
-                parts.push(<span className={keywordColors[typeKetword]}> 
+                parts.push(<span key={`${startIdex}-${endIdex}`} className={keywordColors[typeKetword]}> 
                     {keyword}
                     </span>)
                 })
