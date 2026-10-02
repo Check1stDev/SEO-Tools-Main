@@ -12,10 +12,7 @@ import { tasksData } from './data/tasks.js'
 import type { Task } from './data/tasks.js'
 import {normalizeWords, countLemmas, mapWordsToLemmas, processLemmatize, searchAllKeywords} from './services/morphology.js'
 import {getSpamPercent, getAcademicNausea, waterPercent} from './services/textMetrics.js'
-import { runCopyrightersTask } from './services/arsenkin.js'
-import type { ArsenkinData } from './services/arsenkin.js'
-import { buildTzDocument } from './services/tzDocument.js'
-import type { TzData } from './services/tzDocument.js'
+import { tzRouter } from './routes/tz.js'
 
 
 type keywordsFromTestCheck = {
@@ -134,52 +131,8 @@ app.post('/projects/:id/tasks', (req,res) => {
     })
 
 
-// ТЗ на текст (Арсенкин + подстановка в Word-шаблон проекта)
-
-    app.post('/tz/fetch', async (req,res) => {
-        const body = req.body as {
-            queries: string[]
-            se: 1 | 2
-            region: number
-            generateStructure?: boolean
-        }
-
-        const data: ArsenkinData = {
-            queries: body.queries,
-            se: body.se,
-            region: body.region,
-            remove_main: true,
-            foreign: false
-        }
-        if (body.generateStructure) {
-            data['generate-structure'] = true
-        }
-
-        try {
-            const result = await runCopyrightersTask(data)
-            res.json({ data: result })
-        } catch (err) {
-            const message = err instanceof Error ? err.message : 'Ошибка запроса к Арсенкину'
-            res.status(502).json({ error: message })
-        }
-    })
-
-    app.post('/tz/generate', (req, res) => {
-        const body = req.body as { projectId: number } & TzData
-
-        try {
-            const file = buildTzDocument(body.projectId, {
-                strictKeyword: body.strictKeyword,
-                theme: body.theme
-            })
-            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-            res.setHeader('Content-Disposition', 'attachment; filename="tz.docx"')
-            res.send(file)
-        } catch (err) {
-            const message = err instanceof Error ? err.message : 'Не удалось собрать ТЗ'
-            res.status(400).json({ error: message })
-        }
-    })
+// ТЗ на текст (Арсенкин + Word-шаблон проекта)
+app.use('/tz', tzRouter)
 
 app.listen(3000,() => {
     console.log('Server started on port 3000')

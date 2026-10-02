@@ -10,8 +10,14 @@ const PROJECT_TEMPLATES: Record<number, string> = {
 }
 
 type TzData = {
-    strictKeyword: string
-    theme: string[]
+    title: string
+    volume: string
+    task: string
+    structure: string
+    keys: string[]
+    highlights: string[]
+    themeWords: string[]
+    competitors: string[]
 }
 
 const buildTzDocument = (projectId: number, data: TzData): Buffer => {
@@ -22,7 +28,11 @@ const buildTzDocument = (projectId: number, data: TzData): Buffer => {
 
     const templatePath = path.join(import.meta.dirname, '..', 'templates', templateFile)
     const zip = new PizZip(fs.readFileSync(templatePath))
-    const doc = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true })
+    const doc = new Docxtemplater(zip, {
+        paragraphLoop: true,
+        linebreaks: true,
+        delimiters: { start: '{{', end: '}}' }
+    })
 
     doc.render(data)
 
